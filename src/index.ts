@@ -8,6 +8,7 @@ import constants from "./constants";
 import { overbuffData } from "./typings";
 
 const doc = new GoogleSpreadsheet(config.googleSheetID);
+
 (async function () {
   // Initialize Auth - see https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
   await doc.useServiceAccountAuth({
@@ -18,7 +19,6 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
   });
 
   await doc.loadInfo();
-  console.log(doc.title);
 
   let sheet: GoogleSpreadsheetWorksheet;
   // ty is cool but balls are cooler
@@ -27,7 +27,7 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
     // If there are no sheets present:
     sheet = await doc.addSheet({
       // Make a new sheet with the Tank, DPS, and Support header values.
-      headerValues: ["Tank", "DPS", "Support"],
+      headerValues: ["TANK", "DPS", "SUPPORT"],
     });
   } else if (doc.sheetCount == 1) {
     // If there is already a sheet:

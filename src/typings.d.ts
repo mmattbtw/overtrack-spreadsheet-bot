@@ -7,7 +7,7 @@ export interface overbuffData {
         end_sr: null | number;
         game_type: string;
         game_version: string;
-        heroes_played: [Array];
+        heroes_played: [Array<string, number>];
         key: string;
         map: string;
         player_name: string;
