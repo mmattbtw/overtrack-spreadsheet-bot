@@ -3,16 +3,20 @@ import {
   GoogleSpreadsheet,
   GoogleSpreadsheetWorksheet,
 } from "google-spreadsheet";
+import mongoose from "mongoose";
 import { createClient } from "redis";
 import config from "./config";
 import constants from "./constants";
+import dpsSchema from "./mongodb/models/dps-schema";
+import supportSchema from "./mongodb/models/support-schema";
+import tankSchema from "./mongodb/models/tank-schema";
 import { overTrackData } from "./typings";
 
 const doc = new GoogleSpreadsheet(config.googleSheetID);
-const refreshTime = config.devMode ? 5 : 60 * 3; // if dev mode is enabled, refresh function every 5 seconds, if it is not, refresh every 3 minutes
+const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, refresh function every 5 seconds, if it is not, refresh every 3 minutes
 
 (async function () {
-  // await mongoose.connect(config.mongoDbUrl);
+  await mongoose.connect(config.mongoDbUrl);
   console.log("Connected to MongoDB");
 
   const redisClient = createClient();
@@ -89,28 +93,52 @@ const refreshTime = config.devMode ? 5 : 60 * 3; // if dev mode is enabled, refr
           DPS: formattedData,
         });
 
-        // await new dpsSchema({
-        //   _id: resp.data.games[0].key,
-        //   sr: ifEndSr,
-        // });
+        await dpsSchema.findOneAndUpdate(
+          {
+            _id: resp.data.games[0].key,
+          },
+          {
+            _id: resp.data.games[0].key,
+            sr: ifEndSr,
+          },
+          {
+            upsert: true,
+          }
+        );
       } else if (resp.data.games[0].role.toLowerCase() == "support") {
         await sheet.addRow({
           SUPPORT: formattedData,
         });
 
-        // await new supportSchema({
-        //   _id: resp.data.games[0].key,
-        //   sr: ifEndSr,
-        // });
+        await supportSchema.findOneAndUpdate(
+          {
+            _id: resp.data.games[0].key,
+          },
+          {
+            _id: resp.data.games[0].key,
+            sr: ifEndSr,
+          },
+          {
+            upsert: true,
+          }
+        );
       } else if (resp.data.games[0].role.toLowerCase() == "tank") {
         await sheet.addRow({
           TANK: formattedData,
         });
 
-        // await new tankSchema({
-        //   _id: resp.data.games[0].key,
-        //   sr: ifEndSr,
-        // });
+        await tankSchema.findOneAndUpdate(
+          {
+            _id: resp.data.games[0].key,
+          },
+          {
+            _id: resp.data.games[0].key,
+            sr: ifEndSr,
+          },
+          {
+            upsert: true,
+          }
+        );
       }
     }
 
