@@ -7,7 +7,8 @@
   "scripts": {
     "start": "tsc && node ./build/index.js",
     "dev": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "production": "yarn && yarn build && node ./build/index.js"
   },
   "devDependencies": {
     "@types/google-spreadsheet": "^3.2.0",
