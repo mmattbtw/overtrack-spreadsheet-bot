@@ -1,4 +1,4 @@
-export interface overbuffData {
+export interface overTrackData {
   data: {
     games: [
       {

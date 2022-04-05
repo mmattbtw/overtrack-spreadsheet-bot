@@ -1,6 +1,7 @@
 import config from "./config";
 
 export default {
-  overbuffUrl:
+  overTrackURL:
     "https://api2.overtrack.gg/overwatch/games/" + config.overtrackShareLink,
+  redisPrefix: "otb:",
 };
