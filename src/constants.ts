@@ -13,7 +13,7 @@ export default {
           end_sr: null,
           game_type: "competitive",
           game_version: "2.6.2",
-          heroes_played: [Array],
+          heroes_played: [["s76", 1]],
           key: "C3AGLE-1342/123123123123123123123123123123123123123123-04-04-01-58-7xts2G",
           map: "Rialto",
           player_name: "C3AGLE",

@@ -3,5 +3,6 @@ export default {
   googlePrivateKey: '',
   googleSheetID: '',
   overtrackShareLink: '',
-  mongoDbUrl: ''
+  mongoDbUrl: '',
+  devMode: bool,
 };
