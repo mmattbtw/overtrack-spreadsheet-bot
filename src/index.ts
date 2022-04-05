@@ -3,16 +3,26 @@ import {
   GoogleSpreadsheet,
   GoogleSpreadsheetWorksheet,
 } from "google-spreadsheet";
+import mongoose from "mongoose";
 import { createClient } from "redis";
 import config from "./config";
 import constants from "./constants";
+import dpsSchema from "./mongodb/models/dps-schema";
+import supportSchema from "./mongodb/models/support-schema";
+import tankSchema from "./mongodb/models/tank-schema";
 import { overTrackData } from "./typings";
 
 const doc = new GoogleSpreadsheet(config.googleSheetID);
+const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, refresh function every 5 seconds, if it is not, refresh every 3 minutes
 
 (async function () {
+  await mongoose.connect(config.mongoDbUrl);
+  console.log("Connected to MongoDB");
+
   const redisClient = createClient();
+  console.log("Redis client created.");
   await redisClient.connect();
+  console.log("Redis client connected.");
 
   redisClient.on("error", (err) => console.log("Redis Error", err));
 
@@ -23,6 +33,7 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
     client_email: config.googleAccountEmail,
     private_key: config.googlePrivateKey,
   });
+  console.log("Authorized with Google Docs.");
 
   await doc.loadInfo();
 
@@ -52,6 +63,10 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
 
     // console.log(resp.data);
 
+    const ifEndSr = resp.data.games[0].end_sr
+      ? resp.data.games[0].end_sr
+      : resp.data.games[0].start_sr;
+
     let lastGameId = await redisClient.get(
       constants.redisPrefix + "lastGameID"
     );
@@ -63,10 +78,7 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
     }
 
     const formattedData = `=HYPERLINK("https://twitch.tv/mmattbtw", "${
-      resp.data.games[0].end_sr
-        ? resp.data.games[0].end_sr
-        : resp.data.games[0].start_sr +
-          " <-- Starting SR (couldn't find ending SR)"
+      ifEndSr + " <-- Starting SR (couldn't find ending SR)"
     }")`;
 
     if (resp.data.games[0].game_type === "competitive") {
@@ -80,14 +92,53 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
         await sheet.addRow({
           DPS: formattedData,
         });
+
+        await dpsSchema.findOneAndUpdate(
+          {
+            _id: resp.data.games[0].key,
+          },
+          {
+            _id: resp.data.games[0].key,
+            sr: ifEndSr,
+          },
+          {
+            upsert: true,
+          }
+        );
       } else if (resp.data.games[0].role.toLowerCase() == "support") {
         await sheet.addRow({
           SUPPORT: formattedData,
         });
+
+        await supportSchema.findOneAndUpdate(
+          {
+            _id: resp.data.games[0].key,
+          },
+          {
+            _id: resp.data.games[0].key,
+            sr: ifEndSr,
+          },
+          {
+            upsert: true,
+          }
+        );
       } else if (resp.data.games[0].role.toLowerCase() == "tank") {
         await sheet.addRow({
           TANK: formattedData,
         });
+
+        await tankSchema.findOneAndUpdate(
+          {
+            _id: resp.data.games[0].key,
+          },
+          {
+            _id: resp.data.games[0].key,
+            sr: ifEndSr,
+          },
+          {
+            upsert: true,
+          }
+        );
       }
     }
 
@@ -95,5 +146,5 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
 
     // console.log(resp.data.games[0]);
     console.log("Data recieved.");
-  }, 1000 * 60 * 3); // Function is called every 3 minutes
+  }, 1000 * refreshTime); // Function is called every {refreshTime} seconds
 })();
