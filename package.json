@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "start": "tsc && node ./build/index.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/google-spreadsheet": "^3.2.0",
