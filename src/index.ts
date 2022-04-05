@@ -95,5 +95,5 @@ const doc = new GoogleSpreadsheet(config.googleSheetID);
 
     // console.log(resp.data.games[0]);
     console.log("Data recieved.");
-  }, 1000 * 2); // Function is called every 3 minutes
+  }, 1000 * 60 * 3); // Function is called every 3 minutes
 })();
