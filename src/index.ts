@@ -10,7 +10,7 @@ import constants from "./constants";
 import dpsSchema from "./mongodb/models/dps-schema";
 import supportSchema from "./mongodb/models/support-schema";
 import tankSchema from "./mongodb/models/tank-schema";
-import { overTrackData } from "./typings";
+import { overTrackData } from "./typings/typings";
 
 const doc = new GoogleSpreadsheet(config.googleSheetID);
 const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, refresh function every 5 seconds, if it is not, refresh every 3 minutes
