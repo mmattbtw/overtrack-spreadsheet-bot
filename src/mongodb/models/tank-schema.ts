@@ -8,6 +8,8 @@ const reqString = {
 const loggingSchema = new Schema({
   _id: reqString, // Game ID
   sr: reqString, // SR gained/lost
+  timestamp: reqString,
+  ifEndSr: Boolean,
 });
 
 const name = "tank";

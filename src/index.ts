@@ -44,7 +44,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
     // If there are no sheets present:
     sheet = await doc.addSheet({
       // Make a new sheet with the Tank, DPS, and Support header values.
-      headerValues: ["TANK", "DPS", "SUPPORT"],
+      headerValues: ["TANK", "DPS", "SUPPORT", "TIMESTAMP"],
     });
   } else if (doc.sheetCount == 1) {
     // If there is already a sheet:
@@ -63,9 +63,11 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
 
     // console.log(resp.data);
 
-    const ifEndSr = resp.data.games[0].end_sr
+    const ifEndSrVar = resp.data.games[0].end_sr
       ? resp.data.games[0].end_sr
       : resp.data.games[0].start_sr;
+
+    const ifEndSrBool = resp.data.games[0].end_sr ? true : false;
 
     let lastGameId = await redisClient.get(
       constants.redisPrefix + "lastGameID"
@@ -79,7 +81,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
 
     const formattedData = `=HYPERLINK("https://https://overtrack.gg/overwatch/games/${
       resp.data.games[0].key
-    }", "${ifEndSr + " <-- Starting SR (couldn't find ending SR)"}")`;
+    }", "${ifEndSrVar + " <-- Starting SR (couldn't find ending SR)"}")`;
 
     if (resp.data.games[0].game_type === "competitive") {
       await redisClient.set(
@@ -91,6 +93,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
       if (resp.data.games[0].role.toLowerCase() == "damage") {
         await sheet.addRow({
           DPS: formattedData,
+          TIMESTAMP: resp.data.games[0].time,
         });
 
         await dpsSchema.findOneAndUpdate(
@@ -99,7 +102,9 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
           },
           {
             _id: resp.data.games[0].key,
-            sr: ifEndSr,
+            sr: ifEndSrVar,
+            timestamp: resp.data.games[0].time,
+            ifEndSr: ifEndSrBool,
           },
           {
             upsert: true,
@@ -116,7 +121,9 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
           },
           {
             _id: resp.data.games[0].key,
-            sr: ifEndSr,
+            sr: ifEndSrVar,
+            timestamp: resp.data.games[0].time,
+            ifEndSr: ifEndSrBool,
           },
           {
             upsert: true,
@@ -133,7 +140,9 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
           },
           {
             _id: resp.data.games[0].key,
-            sr: ifEndSr,
+            sr: ifEndSrVar,
+            timestamp: resp.data.games[0].time,
+            ifEndSr: ifEndSrBool,
           },
           {
             upsert: true,
