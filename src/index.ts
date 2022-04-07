@@ -77,9 +77,9 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
       return;
     }
 
-    const formattedData = `=HYPERLINK("https://twitch.tv/mmattbtw", "${
-      ifEndSr + " <-- Starting SR (couldn't find ending SR)"
-    }")`;
+    const formattedData = `=HYPERLINK("https://https://overtrack.gg/overwatch/games/${
+      resp.data.games[0].key
+    }", "${ifEndSr + " <-- Starting SR (couldn't find ending SR)"}")`;
 
     if (resp.data.games[0].game_type === "competitive") {
       await redisClient.set(
