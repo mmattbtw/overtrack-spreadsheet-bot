@@ -79,7 +79,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
       return;
     }
 
-    const formattedData = `=HYPERLINK("https://https://overtrack.gg/overwatch/games/${
+    const formattedData = `=HYPERLINK("https://overtrack.gg/overwatch/games/${
       resp.data.games[0].key
     }", "${ifEndSrVar + " <-- Starting SR (couldn't find ending SR)"}")`;
 
