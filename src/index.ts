@@ -70,7 +70,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
     const ifEndSrBool = resp.data.games[0].end_sr ? true : false;
 
     let lastGameId = await redisClient.get(
-      constants.redisPrefix + "lastGameID",
+      constants.redisPrefix + "lastGameID"
     );
     console.log(lastGameId);
 
@@ -86,7 +86,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
     if (resp.data.games[0].game_type === "competitive") {
       await redisClient.set(
         constants.redisPrefix + "lastGameID",
-        resp.data.games[0].key,
+        resp.data.games[0].key
       );
 
       // there HAS to be a better way to do this rather than do an if/else chain
@@ -108,7 +108,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
           },
           {
             upsert: true,
-          },
+          }
         );
       } else if (resp.data.games[0].role.toLowerCase() == "support") {
         await sheet.addRow({
@@ -127,7 +127,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
           },
           {
             upsert: true,
-          },
+          }
         );
       } else if (resp.data.games[0].role.toLowerCase() == "tank") {
         await sheet.addRow({
@@ -146,7 +146,7 @@ const refreshTime = config.devMode ? 15 : 60 * 3; // if dev mode is enabled, ref
           },
           {
             upsert: true,
-          },
+          }
         );
       }
     }
